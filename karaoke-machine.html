@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Karaoke Machine | Siddharth Paleti</title>
+	<meta name="description" content="Karaoke Machine: a five-block tone control and karaoke voice-suppression circuit with LED volume display, designed, simulated, breadboarded and built as a PCB for EE 210.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap">
+	<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+	<a class="skip" href="#main">Skip to content</a>
+
+	<header class="site-header">
+		<nav class="container nav" aria-label="Main">
+			<a class="brand" href="index.html">Siddharth Paleti</a>
+			<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+			</button>
+			<ul class="nav-links" id="nav-links">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="research.html">Research</a></li>
+				<li><a href="projects.html" aria-current="page">Projects</a></li>
+				<li><a href="activities.html">Extracurriculars</a></li>
+				<li><a href="contact.html">Contact</a></li>
+				<li><a class="btn" href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="main">
+		<section class="proj-hero">
+			<div class="container proj-hero-grid">
+				<div>
+					<a class="crumb" href="projects.html">← All projects</a><br>
+					<span class="tag warm">Circuits · PCB</span>
+					<h1>Karaoke Machine</h1>
+					<p class="lede">A five-block audio circuit with tone control, karaoke voice suppression and LED volume feedback, taken from hand calculations to a soldered PCB.</p>
+					<dl class="facts"><div><dt>Course</dt><dd>EE 210, Fall 2024</dd></div><div><dt>Role</dt><dd>Design, simulation and build</dd></div><div><dt>Tools</dt><dd>Multisim, breadboard, oscilloscope, soldering</dd></div><div><dt>Blocks</dt><dd>Mixer, tone, volume, LED display, attenuator</dd></div></dl>
+				</div>
+				<figure class="proj-cover"><button class="zoom" type="button"><img src="images/projects/karaoke-machine/cover.jpg" width="963" height="722" loading="lazy" alt="Assembled karaoke circuit board"></button><figcaption>The finished karaoke PCB.</figcaption></figure>
+			</div>
+		</section>
+		<section class="section"><div class="container"><div class="section-head"><div><h2>Overview</h2></div></div><div class="prose"><p>The Tone Control and Karaoke Circuit takes any audio input through a 3.5 mm jack and passes it through five soldered blocks: a mixer/karaoke stage, tone control, volume control, an LED volume display and an attenuator. It lets you control bass, treble and volume, or suppress the vocals on a track.</p>
+<div class="callout"><p><b>Class project:</b> EE 210, Fall 2024. Each block was designed by hand, simulated in Multisim, built on a breadboard and tested with an oscilloscope before the final PCB.</p></div></div></div></section><section class="section alt"><div class="container"><div class="section-head"><div><h2>Block by block</h2><p>For each block: the design goal, how it works, and the evidence at each stage. Click any figure to enlarge.</p></div></div><div class="blocks"><article class="block"><div class="block-head"><span class="block-num">1</span><h3>Mixer / karaoke</h3></div>
+<div class="block-text"><p><b>Goal.</b> Process the audio from the 3.5 mm jack, which has a left prong, a right prong and a ground. An SPDT switch chooses between mixing the channels, Vout = −(VL + VR), and suppressing the vocals, Vout = VL − VR, which removes components that are equally distributed across both channels.</p><p><b>How it works.</b> An op-amp circuit that works as an inverting summing amplifier in mixer mode and a subtracting amplifier in karaoke mode. Matched resistors give a gain of one, and 1% tolerance parts matter most in karaoke mode so the subtraction is precise.</p></div>
+<div class="figs c3 uniform contain"><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b1-schematic.jpg" width="477" height="341" loading="lazy" alt="Block 1 schematic"></button><figcaption>Schematic</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b1-calcs.jpg" width="769" height="577" loading="lazy" alt="Hand calculations for block 1"></button><figcaption>Hand calculations</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b1-mixer.jpg" width="693" height="555" loading="lazy" alt="Oscilloscope trace of block 1 in mixer mode"></button><figcaption>Simulation, mixer mode</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b1-karaoke.jpg" width="702" height="557" loading="lazy" alt="Oscilloscope trace of block 1 in karaoke mode"></button><figcaption>Simulation, karaoke mode</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b1-breadboard.jpg" width="924" height="842" loading="lazy" alt="Block 1 on a breadboard"></button><figcaption>Breadboard</figcaption></figure></div></article><article class="block"><div class="block-head"><span class="block-num">2</span><h3>Tone control</h3></div>
+<div class="block-text"><p><b>Goal.</b> Modify the signal's frequency content by independently adjusting bass and treble.</p><p><b>How it works.</b> A Baxandall tone-control circuit with two potentiometers, one for bass and one for treble. The resistors set the gain range, designed to run from 1/10 to 10, so the signal can drop to 10% of its amplitude or be amplified ten times.</p></div>
+<div class="figs c3 uniform contain"><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b2-schematic.jpg" width="447" height="380" loading="lazy" alt="Block 2 schematic"></button><figcaption>Schematic</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b2-calcs.jpg" width="770" height="540" loading="lazy" alt="Hand calculations for block 2"></button><figcaption>Hand calculations</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b2-treble.jpg" width="692" height="556" loading="lazy" alt="Simulation of treble boost"></button><figcaption>Simulation, treble boost</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b2-bass.jpg" width="687" height="556" loading="lazy" alt="Simulation of bass boost"></button><figcaption>Simulation, bass boost</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b2-flat.jpg" width="698" height="561" loading="lazy" alt="Simulation of flat response"></button><figcaption>Simulation, flat response (both pots at 50%)</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b2-breadboard.jpg" width="591" height="1036" loading="lazy" alt="Block 2 on a breadboard"></button><figcaption>Breadboard</figcaption></figure></div></article><article class="block"><div class="block-head"><span class="block-num">3</span><h3>Volume control</h3></div>
+<div class="block-text"><p><b>Goal.</b> Adjust the signal amplitude to control the output volume before the later blocks.</p><p><b>How it works.</b> A single potentiometer varies the voltage at its output terminal as it is turned.</p></div>
+<div class="figs c3 uniform contain"><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b3-breadboard.jpg" width="826" height="363" loading="lazy" alt="Block 3 on a breadboard"></button><figcaption>Breadboard</figcaption></figure></div></article><article class="block"><div class="block-head"><span class="block-num">4</span><h3>LED volume display</h3></div>
+<div class="block-text"><p><b>Goal.</b> Give a visual indication of the audio amplitude with four LEDs at different voltage levels.</p><p><b>How it works.</b> A comparator network. Resistor values set a reference voltage for each LED, at 1.5 V, 1 V, 0.5 V and 0.25 V. When the signal exceeds a reference, the next LED lights, so more LEDs light as the volume rises. Limiting resistors protect the LEDs.</p></div>
+<div class="figs c3 uniform contain"><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b4-schematic.jpg" width="231" height="518" loading="lazy" alt="Block 4 schematic"></button><figcaption>Schematic</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b4-calcs.jpg" width="999" height="1036" loading="lazy" alt="Hand calculations for block 4"></button><figcaption>Hand calculations</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b4-sim1.jpg" width="576" height="487" loading="lazy" alt="Multimeter readings in the block 4 simulation"></button><figcaption>Simulation, part 1</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b4-sim2.jpg" width="782" height="540" loading="lazy" alt="More multimeter readings in the block 4 simulation"></button><figcaption>Simulation, part 2</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b4-breadboard.jpg" width="952" height="652" loading="lazy" alt="Block 4 on a breadboard"></button><figcaption>Breadboard</figcaption></figure></div></article><article class="block"><div class="block-head"><span class="block-num">5</span><h3>Attenuator</h3></div>
+<div class="block-text"><p><b>Goal.</b> Reduce the signal so it sits at a comfortable level for headphones.</p><p><b>How it works.</b> An inverting op-amp whose resistors set a gain below one. The output is meant to stay between 0.5 V and 1 V. Scaling the scope channels showed a gain of 1/20, as designed.</p></div>
+<div class="figs c3 uniform contain"><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b5-schematic.jpg" width="372" height="401" loading="lazy" alt="Block 5 schematic"></button><figcaption>Schematic</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b5-calcs.jpg" width="769" height="326" loading="lazy" alt="Hand calculations for block 5"></button><figcaption>Hand calculations</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b5-scope.jpg" width="692" height="562" loading="lazy" alt="Oscilloscope input and output for block 5"></button><figcaption>Simulation: input 1 V/div, output 0.05 V/div</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/b5-breadboard.jpg" width="602" height="443" loading="lazy" alt="Block 5 on a breadboard"></button><figcaption>Breadboard</figcaption></figure></div></article></div></div></section><section class="section"><div class="container"><div class="two-col"><div class="prose"><h3 style="margin-top:0">Build process</h3><p>I first drew the schematic on paper and did every calculation to set the resistor values and connections. To find mistakes early, I built each block on its own and put an oscilloscope on its input and output to confirm it did its job.</p><p>For the PCB, I soldered in a specific order to make it easier: resistors, IC sockets, capacitors, audio jacks, the switch, the LEDs, and finally the potentiometers. I tested it using the audio equalizer of the myDAQ to protect the board.</p></div>
+<div class="prose"><h3 style="margin-top:0">What went wrong, and how I caught it</h3><ul><li>In block 4, I first placed the limiting resistors after the LEDs instead of before them. I corrected this in the Multisim and breadboard designs.</li><li>In block 1, the switch did not change between mixer and karaoke output correctly. Testing the block alone showed a resistor was not connected to the breadboard terminals properly.</li></ul></div></div></div></section><section class="section alt"><div class="container"><div class="section-head"><div><h2>The finished circuit</h2></div></div><div class="figs c2 uniform contain"><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/final-pcb.jpg" width="963" height="722" loading="lazy" alt="Final soldered karaoke PCB"></button><figcaption><b>Final PCB.</b> All five blocks soldered onto one board.</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/karaoke-machine/overall-schematic.jpg" width="993" height="548" loading="lazy" alt="Overall schematic of the full circuit"></button><figcaption><b>Overall schematic</b> of all five blocks.</figcaption></figure></div></div></section>
+		<section class="section"><div class="container"><div class="pager"><a class="pn prev" href="material-testing.html"><span>← Previous</span><b>Material Testing</b></a><a class="pn next" href="fertilizer-sprinkler.html"><span>Next →</span><b>Fertilizer Sprinkler</b></a></div></div></section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container">
+			<div class="contact-grid">
+				<div>
+					<h2>Let's talk</h2>
+					<p>I'm happy to chat about research, robotics, or anything on this site.</p>
+					<div class="btn-row"><a class="btn" href="mailto:Siddharthpaleati23@gmail.com">Email me</a></div>
+				</div>
+				<ul class="contact-list">
+					<li><span>Email</span><a href="mailto:Siddharthpaleati23@gmail.com">Siddharthpaleati23@gmail.com</a></li>
+					<li><span>Phone</span><a href="tel:+12248643930">(224) 864-3930</a></li>
+					<li><span>Location</span>Hawthorn Woods, IL</li>
+					<li><span>Elsewhere</span><a href="https://www.linkedin.com/in/siddharth-paleti-7998622a8/">LinkedIn</a> · <a href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+				</ul>
+			</div>
+			<p class="footer-note">&copy; 2026 Siddharth Paleti</p>
+		</div>
+	</footer>
+
+	<script src="assets/js/site.js"></script>
+</body>
+</html>

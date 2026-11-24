@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Style vs. User: Honors Thesis | Siddharth Paleti</title>
+	<meta name="description" content="Honors thesis: representing handwriting trajectories by separating a writer's style from the task, using ProMPs, kernel PCA, ANOVA and ridge regression.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+	<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+	<a class="skip" href="#main">Skip to content</a>
+
+	<header class="site-header">
+		<nav class="container nav" aria-label="Main">
+			<a class="brand" href="index.html">Siddharth Paleti</a>
+			<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+			</button>
+			<ul class="nav-links" id="nav-links">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="research.html" aria-current="page">Research</a></li>
+				<li><a href="projects.html">Projects</a></li>
+				<li><a href="activities.html">Extracurriculars</a></li>
+				<li><a href="contact.html">Contact</a></li>
+				<li><a class="btn" href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="main">
+		<section class="page-hero">
+			<div class="container">
+				<a class="crumb" href="research.html">← All work</a><br>
+				<span class="tag">Honors thesis</span>
+				<h1>Style vs. User</h1>
+				<p class="lede">Separating how a person writes from what they are writing, so that a writer's style can be measured and redrawn on top of a generic trajectory.</p>
+				<div class="meta-row">
+					<span><b>Student</b> Siddharth Paleti</span>
+					<span><b>Advisor</b> Dr. Katie Fitzsimons</span>
+					<span><b>Lab</b> Human-Centered Robotics Lab</span>
+					<span><b>Program</b> Schreyer Honors College, Penn State</span>
+					<span><b>Status</b> In progress · last update Oct 27, 2026</span>
+				</div>
+				<nav class="toc" aria-label="On this page">
+					<a href="#question">The question</a>
+					<a href="#method">Method</a>
+					<a href="#results">Results</a>
+					<a href="#timeline">Timeline</a>
+					<a href="#next">Next steps</a>
+				</nav>
+			</div>
+		</section>
+
+		<hr class="divider">
+
+		<section class="section" id="question">
+			<div class="container two-col">
+				<div class="prose">
+					<h2>The question</h2>
+					<p>Every handwritten character is a trajectory: the path a pen traces through time. What you see in a recorded "S" depends on two things at once, <b>the task</b> (which character is being written) and <b>the user</b> (who is writing it).</p>
+					<p>The objective of this thesis is to represent handwriting trajectories by <b>separating the style from the task</b>. If that works, a writer's style becomes a quantity you can measure, compare across tasks, and apply to a generic trajectory to produce a personalized one.</p>
+					<div class="callout">
+						<p><b>In short:</b> find the directions in which handwriting varies, test which ones belong to the writer and which to the character, then use the writer's directions to redraw their style.</p>
+					</div>
+				</div>
+				<div>
+					<div class="figs c2">
+						<figure><button class="zoom" type="button"><img src="images/research/thesis-strokes-a.png" width="335" height="465" loading="lazy" alt="A recorded handwriting stroke plotted in x and y, with a green dot marking the start"></button><figcaption>Two recorded pen paths. Same kind of data, different shapes.</figcaption></figure>
+						<figure><button class="zoom" type="button"><img src="images/research/thesis-strokes-b.png" width="290" height="461" loading="lazy" alt="A second recorded handwriting stroke plotted in x and y"></button><figcaption>Raw strokes are the input to everything below.</figcaption></figure>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="method">
+			<div class="container">
+				<div class="section-head">
+					<div>
+						<h2>Method</h2>
+						<p>Four stages, from raw pen paths to a redrawn, personalized trajectory.</p>
+					</div>
+				</div>
+				<div class="steps">
+					<div class="step">
+						<div>
+							<h3>Represent each trajectory as a ProMP</h3>
+							<p>A probabilistic movement primitive describes a trajectory as a weighted sum of basis functions, <i>y<sub>t</sub> = φ<sub>t</sub><sup>T</sup>w + ε</i>, with a Gaussian distribution over the weights. Time is normalized to [0, 1] so every sample, whatever its length, becomes a weight vector of the same size.</p>
+							<div class="eq">
+								<span class="eq-label">Trajectory model</span>
+								\[ y_t = \phi_t^{\top} w + \epsilon_y \qquad p(w) = \mathcal{N}\!\left(w \mid \mu_w, \Sigma_w\right) \]
+							</div>
+							<div class="eq">
+								<span class="eq-label">Fixed-length vectors</span>
+								\[ z_t = \frac{t - t_0}{t_1 - t_0} \qquad y_{t_{norm}} = \phi_{z_t}^{\top} w + \epsilon_y \qquad w \in \mathbb{R}^{KD} \]
+							</div>
+						</div>
+					</div>
+					<div class="step">
+						<div>
+							<h3>Find the main directions of variation with kernel PCA</h3>
+							<p>An RBF kernel measures how similar two weight vectors are. Solving the eigenproblem on the kernel matrix gives principal components, and each trajectory gets a score on every component.</p>
+							<div class="eq">
+								<span class="eq-label">Kernel, eigenproblem, score</span>
+								\[ k(x_i, x_j) = \exp\!\left(-\frac{\lVert x_i - x_j \rVert^{2}}{2\sigma^{2}}\right) \qquad \ell\lambda\alpha = K\alpha \qquad z_k = \sum_{n=1}^{\ell} \alpha_n^{k}\, k(x_n, x) \]
+							</div>
+						</div>
+					</div>
+					<div class="step">
+						<div>
+							<h3>Test which components track the user and which track the task</h3>
+							<p>For every principal component, an ANOVA asks whether its scores differ by writer, by character, by both, or by neither. That sorts the components into user-dominated, task-dominated, shared and noise. See the results below.</p>
+						</div>
+					</div>
+					<div class="step">
+						<div>
+							<h3>Decode the style with ridge regression and redraw</h3>
+							<p>Ridge regression (α = 1) learns a map from scores back to ProMP weights. A writer's style is the offset between their average position in score space and the population average. Decoding that offset gives a weight change Δw that is added, with a style gain g, to the task's mean weights.</p>
+							<div class="eq">
+								<span class="eq-label">Ridge decoder</span>
+								\[ \hat{B} = \left(Z^{\top} Z + \alpha I\right)^{-1} Z^{\top} W \qquad \hat{w}(z) = \hat{B}^{\top} z + b \]
+							</div>
+							<div class="eq">
+								<span class="eq-label">Styled point and weight offset</span>
+								\[ z_{style} = z_{ref} + \left(\bar{z}_u - \bar{z}_{pop}\right) \qquad \Delta w = \hat{w}(z_{style}) - \hat{w}(z_{ref}) \]
+							</div>
+							<div class="eq">
+								<span class="eq-label">Personalized vs. generic trajectory</span>
+								\[ w_{pers} = \mu_{task} + g\,\Delta w \]
+								\[ y_{pers}(t) = s\,\big(\phi(t)\,w_{pers}\big) + m \qquad y_{generic}(t) = s\,\big(\phi(t)\,\mu_{task}\big) + m \]
+							</div>
+							<p style="margin-top:12px; font-size:.92rem;">Here <i>s</i> and <i>m</i> are a scale and an offset, and <i>g</i> is the style gain (<i>g</i> = 1 in the figures below).</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section" id="results">
+			<div class="container">
+				<div class="section-head">
+					<div>
+						<h2>Results so far</h2>
+						<p>The pipeline runs end to end: ANOVA finds components that belong to the writer, and decoding them changes the redrawn trajectory.</p>
+					</div>
+				</div>
+
+				<h3>ANOVA sorts the principal components</h3>
+				<p class="prose">Testing each component against writer and character found four that are dominated by a single factor, plus four that respond to both.</p>
+				<div class="pc-grid">
+					<div class="pc-box user"><h4>Dominated by the user</h4><ul class="pcs"><li>PC3</li><li>PC4</li></ul></div>
+					<div class="pc-box task"><h4>Dominated by the task</h4><ul class="pcs"><li>PC7</li><li>PC14</li></ul></div>
+					<div class="pc-box both"><h4>Significant for both</h4><ul class="pcs"><li>PC10</li><li>PC12</li><li>PC13</li><li>PC15</li></ul></div>
+					<div class="pc-box none"><h4>Neither significant</h4><ul class="pcs"><li>PC1</li><li>PC2</li><li>PC5</li><li>PC6</li><li>PC8</li><li>PC9</li><li>PC11</li></ul></div>
+				</div>
+
+				<div class="two-col" style="margin-top: 36px;">
+					<figure>
+						<button class="zoom" type="button"><img src="images/research/thesis-kpca.png" width="784" height="584" loading="lazy" alt="Scatter plot of kernel PCA scores, Kernel PC3 on the x-axis and Kernel PC4 on the y-axis, forming a cross shape"></button>
+						<figcaption><b>Kernel PCA projection of the ProMP weights.</b> Each point is one trajectory, shown on kernel PC3 and PC4, the two user-dominated components.</figcaption>
+					</figure>
+					<div class="prose">
+						<h3 style="margin-top:0">Reading the scatter</h3>
+						<p>The scores spread out along two axes in a cross shape rather than a round cloud, so trajectories vary strongly along each of these components. That makes them candidates for describing a writer's style.</p>
+					</div>
+				</div>
+
+				<h3 style="margin-top: 56px;">Redrawing one writer's style</h3>
+				<p class="prose">For User 1, the blue line is the mean trajectory for the task. The orange line adds the decoded style offset. The grey lines are every trace that user recorded.</p>
+				<ul class="legend" aria-label="Legend">
+					<li><i style="background:#9a9a9a"></i>User 1's recorded traces</li>
+					<li><i style="background:#1f77b4"></i>Mean trace</li>
+					<li><i style="background:#ff7f0e"></i>Mean + style (PC5, PC6)</li>
+				</ul>
+				<div class="figs c3">
+					<figure><button class="zoom" type="button"><img src="images/research/thesis-S.png" width="780" height="780" loading="lazy" alt="Letter S: grey recorded traces, blue mean trace, orange style-adjusted trace"></button><figcaption><b>Letter S</b></figcaption></figure>
+					<figure><button class="zoom" type="button"><img src="images/research/thesis-O.png" width="780" height="780" loading="lazy" alt="Letter O: grey recorded traces, blue mean trace, orange style-adjusted trace"></button><figcaption><b>Letter O</b></figcaption></figure>
+					<figure><button class="zoom" type="button"><img src="images/research/thesis-3.png" width="780" height="780" loading="lazy" alt="Digit 3: grey recorded traces, blue mean trace, orange style-adjusted trace"></button><figcaption><b>Digit 3</b></figcaption></figure>
+				</div>
+
+				<h3 style="margin-top: 56px;">Generic vs. reconstructed, using PC4</h3>
+				<p class="prose">An earlier test rebuilt trajectories from a single user-dominated component, PC4. Blue is the generic trajectory for the task and orange is the reconstruction.</p>
+				<div class="figs c4">
+					<figure><button class="zoom" type="button"><img src="images/research/thesis-pc4-C.png" width="464" height="465" loading="lazy" alt="Task C: generic trajectory in blue and PC4 reconstruction in orange"></button><figcaption>Task C</figcaption></figure>
+					<figure><button class="zoom" type="button"><img src="images/research/thesis-pc4-7.png" width="466" height="467" loading="lazy" alt="Task 7: generic trajectory in blue and PC4 reconstruction in orange"></button><figcaption>Task 7</figcaption></figure>
+					<figure><button class="zoom" type="button"><img src="images/research/thesis-pc4-J.png" width="464" height="439" loading="lazy" alt="Task J: generic trajectory in blue and PC4 reconstruction in orange"></button><figcaption>Task J</figcaption></figure>
+					<figure><button class="zoom" type="button"><img src="images/research/thesis-pc4-3.png" width="463" height="463" loading="lazy" alt="Task 3: generic trajectory in blue and PC4 reconstruction in orange"></button><figcaption>Task 3</figcaption></figure>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="timeline">
+			<div class="container">
+				<div class="section-head"><div><h2>Timeline</h2><p>How the work has developed across my supervisor meetings.</p></div></div>
+				<ol class="timeline">
+					<li>
+						<time datetime="2026-04-23">April 23, 2026</time>
+						<h3>ProMPs, kernel PCA and the first ANOVA</h3>
+						<p>Trajectories converted to fixed-length ProMP weight vectors, kernel PCA applied, and ANOVA found four significant components. First reconstructions with ridge regression.</p>
+					</li>
+					<li>
+						<time datetime="2026-10-13">October 13, 2026</time>
+						<h3>Objective sharpened, style redrawn for User 1</h3>
+						<p>Restated the goal as separating style from task. Recreated trajectories for the S, O and 3 with the ridge decoder.</p>
+						<p class="next"><b>Next:</b> t-tests, and an ANOVA run per task.</p>
+					</li>
+					<li class="latest">
+						<time datetime="2026-10-27">October 27, 2026 · latest</time>
+						<h3>Decoder written down end to end</h3>
+						<p>Formalized how the PC scores are decoded to weights, how the style offset is computed, and how the personalized and generic trajectories are drawn.</p>
+						<p class="next"><b>Next:</b> t-tests, and an ANOVA per task.</p>
+					</li>
+				</ol>
+			</div>
+		</section>
+
+		<section class="section" id="next">
+			<div class="container">
+				<div class="section-head"><div><h2>Next steps</h2></div></div>
+				<ul class="next-list" style="max-width: 640px;">
+					<li><b>t-tests</b> on the component scores, to complement the ANOVA.</li>
+					<li><b>ANOVA per task</b>, to see whether the user-dominated components hold up within each character.</li>
+				</ul>
+				<div class="pager" style="margin-top: 48px;">
+					<a class="btn ghost" href="research.html">← All work</a>
+					<a class="btn" href="centipede.html">Centipede research <span class="arrow" aria-hidden="true">→</span></a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container">
+			<div class="contact-grid">
+				<div>
+					<h2>Questions about this work?</h2>
+					<p>I'm happy to talk through the method or the results.</p>
+					<div class="btn-row"><a class="btn" href="mailto:Siddharthpaleati23@gmail.com">Email me</a></div>
+				</div>
+				<ul class="contact-list">
+					<li><span>Email</span><a href="mailto:Siddharthpaleati23@gmail.com">Siddharthpaleati23@gmail.com</a></li>
+					<li><span>Phone</span><a href="tel:+12248643930">(224) 864-3930</a></li>
+					<li><span>Location</span>Hawthorn Woods, IL</li>
+					<li><span>Elsewhere</span><a href="https://www.linkedin.com/in/siddharth-paleati-7998622a8/">LinkedIn</a> · <a href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+				</ul>
+			</div>
+			<p class="footer-note">&copy; 2026 Siddharth Paleti</p>
+		</div>
+	</footer>
+
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+		onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]});"></script>
+	<script src="assets/js/site.js"></script>
+</body>
+</html>

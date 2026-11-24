@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Fertilizer Sprinkler | Siddharth Paleti</title>
+	<meta name="description" content="Fertilizer Sprinkler: an Arduino-controlled prototype that waters and fertilizes at once, designed in SolidWorks with 3D-printed parts, servos and a barometer for automatic shut-off.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap">
+	<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+	<a class="skip" href="#main">Skip to content</a>
+
+	<header class="site-header">
+		<nav class="container nav" aria-label="Main">
+			<a class="brand" href="index.html">Siddharth Paleti</a>
+			<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+			</button>
+			<ul class="nav-links" id="nav-links">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="research.html">Research</a></li>
+				<li><a href="projects.html" aria-current="page">Projects</a></li>
+				<li><a href="activities.html">Extracurriculars</a></li>
+				<li><a href="contact.html">Contact</a></li>
+				<li><a class="btn" href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="main">
+		<section class="proj-hero">
+			<div class="container proj-hero-grid">
+				<div>
+					<a class="crumb" href="projects.html">← All projects</a><br>
+					<span class="tag warm">Arduino · C++ · SolidWorks</span>
+					<h1>Fertilizer Sprinkler</h1>
+					<p class="lede">A prototype sprinkler that waters and fertilizes in one pass, with Arduino timing and automatic shut-off, built from cardboard mockup to 3D-printed prototype.</p>
+					<dl class="facts"><div><dt>Role</dt><dd>Concept, design, build and code</dd></div><div><dt>Tools</dt><dd>SolidWorks, Arduino Uno (C++), 3D printing</dd></div><div><dt>Hardware</dt><dd>Servos, barometer, sprinkler junctions</dd></div><div><dt>Process</dt><dd>Cardboard model to functional prototype</dd></div></dl>
+				</div>
+				<figure class="proj-cover contain"><button class="zoom" type="button"><img src="images/projects/fertilizer-sprinkler/cover.jpg" width="750" height="1000" loading="lazy" alt="The assembled fertilizer sprinkler prototype next to a ruler"></button><figcaption>The assembled prototype.</figcaption></figure>
+			</div>
+		</section>
+		<section class="section"><div class="container"><div class="case"><div class="case-row"><h2>Problem</h2><div class="prose"><p>Gardening can be highly time-consuming, especially for individuals who cannot dedicate significant time to consistent care. The challenge was to design a system that simplifies gardening by automating watering and fertilizing tasks.</p></div></div><div class="case-row"><h2>Method</h2><div class="prose"><p>I began with brainstorming and sketching sessions to identify key pain points, which led to the concept of a fertilizer sprinkler that could spray both water and fertilizer simultaneously. Using SolidWorks, I designed the system and integrated an Arduino Uno programmed in C++ to control timing. A barometer was added to enable automatic shut-off, ensuring efficiency and precision. Prototyping started with cardboard models, followed by a functional version built with 3D-printed parts, sprinkler junctions, servos, and a barometer. Along the way, I encountered challenges such as broken parts, delays, and debugging servo control, which required adaptability and iterative problem-solving.</p></div></div><div class="case-row"><h2>Solution</h2><div class="prose"><p>The final prototype successfully automated the watering and fertilizing process, reducing the time commitment required for gardening. The integration of hardware and software ensured precise control over the sprinkler&#x27;s operation, while the iterative prototyping process enhanced both my mechanical engineering and coding skills. This project demonstrated my ability to translate a real-world problem into a functional, user-centered solution through research, design, and rapid prototyping.</p></div></div></div></div></section><section class="section alt"><div class="container"><div class="section-head"><div><h2>Design criteria</h2><p>How the finished prototype measured up.</p></div></div><div class="crit">
+<div class="crit-card"><span class="tag">Primary</span><h3>Cover up to 4,500 sq ft</h3><p>Using an H2O-Six Gear Drive Lawn Sprinkler with a telescoping tripod, the system can water and fertilize up to 4,500 square feet, because that sprinkler is rated to cover that area.</p><p class="crit-status ok">Met</p></div>
+<div class="crit-card"><span class="tag warm">Secondary</span><h3>Fit in a 10 × 18 × 10 in cube</h3><p>The prototype measures 10 in long, 7 in wide and 8.5 in high. Measuring the build confirmed that it fits the envelope.</p><p class="crit-status ok">Met</p></div>
+<div class="crit-card"><span class="tag warm">Secondary</span><h3>Plug into 110 V</h3><p>I could not complete this one. An Arduino test showed the design would work in principle, and the Arduino can be powered from a 9 V battery, though it does not connect to an outlet.</p><p class="crit-status part">Partly met</p></div></div></div></section><section class="section"><div class="container"><h3 class="gal-title">Measuring the prototype</h3><p class="gal-desc">Each dimension was checked directly against the design criteria.</p><div class="figs c3 uniform"><figure><button class="zoom" type="button"><img src="images/projects/fertilizer-sprinkler/funnel.jpg" width="825" height="1100" loading="lazy" alt="Hand holding a 3D-printed funnel against a red ruler"></button><figcaption><b>Funnel</b> measured against a ruler.</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/fertilizer-sprinkler/length.jpg" width="825" height="1100" loading="lazy" alt="Top view of the sprinkler assembly beside a red ruler with servos and tubing"></button><figcaption><b>Length check.</b> Servos, tubing and junctions measured against a ruler.</figcaption></figure><figure><button class="zoom" type="button"><img src="images/projects/fertilizer-sprinkler/height.jpg" width="825" height="1100" loading="lazy" alt="The assembled sprinkler prototype standing next to a ruler"></button><figcaption><b>Height check.</b> The assembled prototype at 8.5 in.</figcaption></figure></div></div></section>
+		<section class="section"><div class="container"><div class="pager"><a class="pn prev" href="karaoke-machine.html"><span>← Previous</span><b>Karaoke Machine</b></a><a class="pn next" href="goodwill-hanger.html"><span>Next →</span><b>Goodwill Hanger</b></a></div></div></section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container">
+			<div class="contact-grid">
+				<div>
+					<h2>Let's talk</h2>
+					<p>I'm happy to chat about research, robotics, or anything on this site.</p>
+					<div class="btn-row"><a class="btn" href="mailto:Siddharthpaleati23@gmail.com">Email me</a></div>
+				</div>
+				<ul class="contact-list">
+					<li><span>Email</span><a href="mailto:Siddharthpaleati23@gmail.com">Siddharthpaleati23@gmail.com</a></li>
+					<li><span>Phone</span><a href="tel:+12248643930">(224) 864-3930</a></li>
+					<li><span>Location</span>Hawthorn Woods, IL</li>
+					<li><span>Elsewhere</span><a href="https://www.linkedin.com/in/siddharth-paleti-7998622a8/">LinkedIn</a> · <a href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+				</ul>
+			</div>
+			<p class="footer-note">&copy; 2026 Siddharth Paleti</p>
+		</div>
+	</footer>
+
+	<script src="assets/js/site.js"></script>
+</body>
+</html>

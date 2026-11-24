@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Centipede Robot Energy Research | Siddharth Paleti</title>
+	<meta name="description" content="Research log: measuring the mechanical work and current draw of the Dynamixel motors on a centipede robot, using a load cell rig, MATLAB and an INA260 current sensor.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+	<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+	<a class="skip" href="#main">Skip to content</a>
+
+	<header class="site-header">
+		<nav class="container nav" aria-label="Main">
+			<a class="brand" href="index.html">Siddharth Paleti</a>
+			<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+			</button>
+			<ul class="nav-links" id="nav-links">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="research.html" aria-current="page">Research</a></li>
+				<li><a href="projects.html">Projects</a></li>
+				<li><a href="activities.html">Extracurriculars</a></li>
+				<li><a href="contact.html">Contact</a></li>
+				<li><a class="btn" href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="main">
+		<section class="page-hero">
+			<div class="container">
+				<a class="crumb" href="research.html">← All work</a><br>
+				<span class="tag warm">Robotics research</span>
+				<h1>Centipede</h1>
+				<p class="lede">Measuring the real energy cost of a centipede robot's motors, from a load cell on the bench to a current sensor on the robot.</p>
+				<div class="meta-row">
+					<span><b>Researcher</b> Siddharth Paleti</span>
+					<span><b>Lab</b> Locomotion in Biology and Robotics Lab</span>
+					<span><b>Advisor</b> Dr. Baxi Chong</span>
+					<span><b>Status</b> Ongoing · weekly updates since Sep 22, 2026</span>
+					<span><b>Hardware</b> Dynamixel 2XL430, HX711 load cell, Arduino Uno, INA260</span>
+					<span><b>Software</b> MATLAB</span>
+				</div>
+				<nav class="toc" aria-label="On this page">
+					<a href="#goal">The goal</a>
+					<a href="#rig">Measurement rig</a>
+					<a href="#results">Mechanical work</a>
+					<a href="#cycles">Cycle runs</a>
+					<a href="#current">Current sensing</a>
+					<a href="#log">Weekly log</a>
+					<a href="#next">Next steps</a>
+				</nav>
+			</div>
+		</section>
+
+		<hr class="divider">
+
+		<section class="section" id="goal">
+			<div class="container">
+				<div class="section-head">
+					<div>
+						<h2>The goal: a trustworthy cost of energy</h2>
+						<p>To compare gaits and terrains, I need to know how much mechanical work the robot's motors really do. The plan has four steps.</p>
+					</div>
+				</div>
+				<div class="steps">
+					<div class="step"><div><h3>Baseline each motor</h3><p>Run the exact motion profile unloaded, with the joint decoupled, and log torque τ<sub>0</sub>(t). Repeat for every motor, because friction varies from unit to unit.</p></div></div>
+					<div class="step"><div><h3>Log real trials</h3><p>Run the same profile with the joint connected. Log torque τ(t) and encoder position θ(t) for all motors at a fixed sample rate.</p></div></div>
+					<div class="step">
+						<div>
+							<h3>Compute work per joint</h3>
+							<p>Subtract the baseline to get the load torque, then sum torque times angle change over time and over all motors.</p>
+							<div class="eq">\[ \tau_{load} = \tau - \tau_0 \qquad W = \sum_{t} \tau_{load}(t)\,\Delta\theta(t) \]</div>
+						</div>
+					</div>
+					<div class="step">
+						<div>
+							<h3>Normalize to cost of energy</h3>
+							<p>Divide total work by robot weight times distance travelled, tracked separately, and compare across gaits and terrains.</p>
+							<div class="eq">\[ \text{cost of energy} = \frac{W_{total}}{\text{weight} \times \text{distance}} \]</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="two-col" style="margin-top: 36px;">
+					<div class="callout">
+						<p><b>Validated on the first test (Sep 22).</b></p>
+						<ul style="margin:.4em 0 0; padding-left:1.2em;">
+							<li>The test runs on a Dynamixel motor and across multiple motors.</li>
+							<li>Baseline subtraction and the work formula execute correctly against real load and position.</li>
+						</ul>
+					</div>
+					<div class="callout warm">
+						<p><b>Still needs proof.</b></p>
+						<ul style="margin:.4em 0 0; padding-left:1.2em;">
+							<li>Per-motor baseline calibration, or one shared calibration across motors.</li>
+							<li>Whether idle and holding torque should count toward the cost.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="rig">
+			<div class="container">
+				<div class="section-head">
+					<div>
+						<h2>The measurement rig</h2>
+						<p>A load cell and the motor are read by MATLAB on a shared clock, so torque and position land in one CSV file.</p>
+					</div>
+				</div>
+
+				<div class="rig" role="img" aria-label="Diagram: load cell to HX711 amplifier to Arduino Uno to MATLAB. Dynamixel 2XL430 to U2D2 to MATLAB. Both are logged on a shared clock into one CSV file.">
+					<div class="rig-row">
+						<div class="rig-box"><b>Load cell</b><small>5 kg bar type</small></div><div class="rig-arrow">→</div>
+						<div class="rig-box"><b>HX711</b><small>24-bit amplifier</small></div><div class="rig-arrow">→</div>
+						<div class="rig-box"><b>Arduino Uno</b><small>D6 data, D5 clock, USB</small></div><div class="rig-arrow">→</div>
+						<div class="rig-box hot"><b>MATLAB</b><small>DynamixelApp.m</small></div>
+					</div>
+					<div class="rig-row">
+						<div class="rig-box"><b>Dynamixel 2XL430</b><small>W250, ID 1, 57600 baud</small></div><div class="rig-arrow">→</div>
+						<div class="rig-box"><b>U2D2</b><small>USB to motor bus</small></div><div class="rig-arrow">→</div>
+						<div class="rig-box share rig-span"><b>Shared clock · one CSV file</b><small>MATLAB logs motor and load-cell readings together</small></div>
+					</div>
+				</div>
+				<ul class="pills" aria-label="Rig parameters">
+					<li>Lever arm r = 0.182 m</li>
+					<li>Weight = 0.1995 kg</li>
+					<li>Calibration mass = 0.0561 kg</li>
+				</ul>
+
+				<div class="figs c3" style="margin-top: 32px;">
+					<figure class="photo"><button class="zoom" type="button"><img src="images/research/centi-motor-photo.jpg" width="913" height="1218" loading="lazy" alt="Dynamixel motor clamped to a bench with a lever arm" style="aspect-ratio:4/5;"></button><figcaption><b>Motor on the bench.</b> Clamped down, lever arm on the horn.</figcaption></figure>
+					<figure class="photo"><button class="zoom" type="button"><img src="images/research/centi-loadcell-photo.jpg" width="685" height="1218" loading="lazy" alt="A black lever arm and a gray weight lying on a desk" style="aspect-ratio:4/5; object-position: 50% 60%;"></button><figcaption><b>Lever arm and weight</b> used for the lifts.</figcaption></figure>
+					<figure class="photo"><button class="zoom" type="button"><img src="images/research/centi-forcesensor-photo.jpg" width="851" height="638" loading="lazy" alt="A bar-type load cell held in a hand over a wooden table" style="aspect-ratio:4/5;"></button><figcaption><b>Bar-type load cell</b>, the force sensor.</figcaption></figure>
+				</div>
+				<div class="figs c2" style="margin-top: 16px;">
+					<figure><button class="zoom" type="button"><img src="images/research/centi-cad-1.jpg" width="841" height="503" loading="lazy" alt="CAD render of a force-sensor holder attached to a motor"></button><figcaption><b>CAD of the force-sensor holder</b>, designed so the load cell can be attached to a motor and a weight added.</figcaption></figure>
+					<figure><button class="zoom" type="button"><img src="images/research/centi-cad-2.jpg" width="730" height="403" loading="lazy" alt="Second angle of the CAD force-sensor holder"></button><figcaption>Same holder from the other side.</figcaption></figure>
+				</div>
+			</div>
+		</section>
+
+		<section class="section" id="results">
+			<div class="container">
+				<div class="section-head">
+					<div>
+						<h2>Mechanical work of one lift</h2>
+						<p>A 199.5 g weight raised through half a turn on a 182 mm arm, repeated at four speeds, with and without the weight.</p>
+					</div>
+				</div>
+
+				<div class="two-col">
+					<div>
+						<h3>The experiment</h3>
+						<p style="color:var(--muted)">Eight sweeps: four speeds (1, 2, 2.5 and 5 rpm), each with and without the weight. One run per condition.</p>
+						<ol class="flow">
+							<li><div>Torque on, tare with no weight</div></li>
+							<li><div>Calibrate with the 56.1 g mass</div></li>
+							<li><div>Sweep the arm from 180° to 359° with Move + Record CSV</div></li>
+							<li><div>Repeat at 1, 2, 2.5 and 5 rpm, with and without 199.5 g</div></li>
+							<li><div>Run <code>analyzeMotorWork</code> on all eight CSV files</div></li>
+						</ol>
+						<p class="table-note">The motor is sampled about 6 times per second and the load cell about 10 times per second.</p>
+					</div>
+					<div>
+						<h3>No load vs. loaded</h3>
+						<div class="table-wrap">
+							<table>
+								<thead><tr><th>Run</th><th>Peak torque (N·m)</th><th>Net work (J)</th></tr></thead>
+								<tbody>
+									<tr><td>No load, 1 rpm</td><td>−0.025</td><td>−0.026</td></tr>
+									<tr><td>No load, 2 rpm</td><td>−0.024</td><td>−0.026</td></tr>
+									<tr><td>No load, 2.5 rpm</td><td>−0.024</td><td>−0.024</td></tr>
+									<tr><td>No load, 5 rpm</td><td>−0.024</td><td>−0.024</td></tr>
+									<tr class="loaded"><td>Loaded, 1 rpm</td><td>0.377</td><td>0.701</td></tr>
+									<tr class="loaded"><td>Loaded, 2 rpm</td><td>0.368</td><td>0.701</td></tr>
+									<tr class="loaded"><td>Loaded, 2.5 rpm</td><td>0.370</td><td>0.706</td></tr>
+									<tr class="loaded"><td>Loaded, 5 rpm</td><td>0.367</td><td>0.697</td></tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="callout" style="margin-top: 32px; max-width: 78ch;">
+					<p><b>What it shows.</b> With no load, torque and work are near zero. With the weight, torque peaks near 0.37 N·m and the net work is about 0.70 J, and both are essentially the same at every speed.</p>
+					<p><b>Back-of-envelope check.</b> Holding 0.1995 kg at the end of a 0.182 m arm takes m·g·r ≈ 0.356 N·m, close to the measured 0.37 N·m peak. Lifting through half a turn raises the weight by 2r, so 2·m·g·r ≈ 0.71 J, close to the measured 0.70 J.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="cycles">
+			<div class="container">
+				<div class="section-head">
+					<div>
+						<h2>Cycle runs on three motors</h2>
+						<p>One lift is a start. Running the arm back and forth for many cycles shows how the torque behaves over time.</p>
+					</div>
+				</div>
+				<div class="two-col">
+					<div class="prose">
+						<p>I ran 110-cycle tests on three motors (1A, 1B and 2A) and built a MATLAB replay tool to play each run back. The load cell is the reference (gray). Against it sit the Dynamixel's own torque reading (blue), that reading filtered (orange), and the filtered reading scaled by a correction factor k (green).</p>
+						<p>On the Motor 2A run the motor's raw reading overshoots the load cell on the main peak, about 0.65 against about 0.4 N·m. With k = 0.7 the corrected trace lands closer, and RMSE against the load cell drops from 0.179 to 0.156 N·m.</p>
+						<p>Tracking one torque peak per cycle also shows the peaks drifting upward over a run, from roughly 0.62 to 0.67 N·m across about 1,400 seconds.</p>
+						<p>The next goal is a simple model, <i>τ = μ·τ<sub>d</sub></i>, where <i>τ<sub>d</sub></i> is the Dynamixel's reported torque and <i>μ</i> is a correction factor that can be fitted per motor and applied to the others.</p>
+					</div>
+					<figure>
+						<button class="zoom" type="button"><img src="images/research/centi-torque-peaks.png" width="1054" height="623" loading="lazy" alt="Line chart of upper peak torque per cycle against time across a 110-cycle run, raw in blue and filtered in orange, both trending upward"></button>
+						<figcaption><b>Upper torque peak per cycle</b> across a 110-cycle run, raw (blue) and filtered (orange, 2 Hz cutoff).</figcaption>
+					</figure>
+				</div>
+				<figure style="margin-top: 28px;">
+					<button class="zoom" type="button"><img src="images/research/centi-cycle-replay.png" width="1400" height="738" loading="lazy" alt="Two MATLAB replay windows showing cycle-run torque traces with error tables"></button>
+					<figcaption><b>The MATLAB replay tool</b> on Motor 2A: load cell in gray, Dynamixel raw in blue, filtered in orange, corrected in green, with RMSE, MAE and bias for each.</figcaption>
+				</figure>
+			</div>
+		</section>
+
+		<section class="section" id="current">
+			<div class="container">
+				<div class="section-head">
+					<div>
+						<h2>Reading torque from current</h2>
+						<p>The motor reports a load percentage, but an INA260 power sensor shows the current it really draws.</p>
+					</div>
+				</div>
+				<div class="two-col">
+					<div>
+						<figure>
+							<button class="zoom" type="button"><img src="images/research/centi-current-fit.png" width="1200" height="919" loading="lazy" alt="Scatter plot of motor load reading in percent against measured current in milliamps, with a straight-line fit through the up-stroke points"></button>
+							<figcaption><b>Load reading vs. measured current.</b> Moving up follows a clean line. Moving down sits near 50 mA while the load reads about zero.</figcaption>
+						</figure>
+					</div>
+					<div class="prose">
+						<h3 style="margin-top:0">A linear current model</h3>
+						<p>Fitting the up-stroke gives a straight line from load percentage to current:</p>
+						<div class="eq">\[ I \approx 0.034\ \text{A} + 0.00467\ \text{A} \times \text{load}\,\% \]</div>
+						<p style="margin-top:14px">Going down, the current stays at about 50 mA while the load reads near 0, so the two directions need to be handled separately.</p>
+						<p>The sensor sits in the motor's 12 V supply line and is read by an Arduino Uno, so the current can be logged alongside the load cell.</p>
+					</div>
+				</div>
+				<div class="figs c2" style="margin-top: 32px; align-items:start;">
+					<figure>
+						<button class="zoom" type="button"><img src="images/research/centi-ina260-diagram.png" width="1400" height="604" loading="lazy" alt="Hand-drawn wiring diagram: 12 volt supply to INA260 to a driver board to the Dynamixel, with the INA260 connected to an Arduino Uno"></button>
+						<figcaption><b>INA260 wiring plan.</b> 12 V supply through the INA260 to the Dynamixel, with the sensor read by an Arduino Uno.</figcaption>
+					</figure>
+					<figure class="photo">
+						<button class="zoom" type="button"><img src="images/research/centi-rig-photo.jpg" width="435" height="522" loading="lazy" alt="Breadboard and Arduino wired to the motor rig, with the INA260 circled in red" style="aspect-ratio: 4/3; object-position: 50% 50%;"></button>
+						<figcaption><b>On the bench.</b> The INA260 is circled in red.</figcaption>
+					</figure>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="log">
+			<div class="container">
+				<div class="section-head"><div><h2>Weekly log</h2><p>What I presented each week, and what came next.</p></div></div>
+				<ol class="timeline">
+					<li>
+						<time datetime="2026-09-22">September 22, 2026</time>
+						<h3>First work measurement</h3>
+						<p>Defined the four-step method for measuring mechanical work. A simple back-and-forth sine test gave 0.0098 J on Motor 5 and −0.0184 J on Motor 6, which showed the pipeline runs but needs calibration.</p>
+						<p class="next"><b>Next:</b> apply the method to the robot, and decide how many electrical sensors to order.</p>
+					</li>
+					<li>
+						<time datetime="2026-09-29">September 29, 2026</time>
+						<h3>Using a force sensor</h3>
+						<p>Planned to baseline each motor and log power using the bridge on the force sensor along with the motor position.</p>
+						<p class="next"><b>Next:</b> attach the force sensor to the robot and wire the electrical sensor.</p>
+					</li>
+					<li>
+						<time datetime="2026-10-13">October 13, 2026</time>
+						<h3>Baseline force experiment</h3>
+						<p>Modeled the experiment in CAD: a holder that connects the force sensor to a motor and carries a weight.</p>
+						<p class="next"><b>Next:</b> 3D print the holder and log the force reading.</p>
+					</li>
+					<li>
+						<time datetime="2026-10-20">October 20, 2026</time>
+						<h3>Mechanical work of one lift</h3>
+						<p>Built the load cell, HX711, Arduino and MATLAB rig, and ran eight sweeps. Torque peaked near 0.37 N·m and work was about 0.70 J at every speed.</p>
+						<p class="next"><b>Next:</b> more masses and downward sweeps, repeat runs on a second motor, and determine a correction factor.</p>
+					</li>
+					<li>
+						<time datetime="2026-10-27">October 27, 2026</time>
+						<h3>Cycle runs on three motors</h3>
+						<p>Ran the new test on Motors 1A, 1B and 2A.</p>
+						<p class="next"><b>Next:</b> find a pattern between motors, drop bad readings, try different speeds, and build a model τ = μ·τ<sub>d</sub>.</p>
+					</li>
+					<li>
+						<time datetime="2026-11-02">November 2, 2026</time>
+						<h3>Analyzing the cycle runs</h3>
+						<p>Compared raw, filtered and corrected torque across cycles.</p>
+						<p class="next"><b>Next:</b> build a model τ = μ·τ<sub>original</sub>.</p>
+					</li>
+					<li>
+						<time datetime="2026-11-10">November 10, 2026</time>
+						<h3>Determining current: the circuit</h3>
+						<p>Drew the INA260 wiring diagram and tracked per-cycle torque peaks across a 110-cycle run.</p>
+						<p class="next"><b>Next:</b> wire in the INA260, get current from the Dynamixel, and combine it with the load cell. A bandpass filter should give a better approximation.</p>
+					</li>
+					<li class="latest">
+						<time datetime="2026-11-17">November 17, 2026 · latest</time>
+						<h3>Determining current: the first fit</h3>
+						<p>The INA260 now shows the current the motor really draws, and it follows a line against load percentage.</p>
+						<p class="next"><b>Next:</b> apply the current model to the motor, and use a bandpass filter to build a torque model.</p>
+					</li>
+				</ol>
+			</div>
+		</section>
+
+		<section class="section" id="next">
+			<div class="container">
+				<div class="section-head"><div><h2>Next steps</h2></div></div>
+				<ul class="next-list" style="max-width: 680px;">
+					<li><b>Apply the current model</b> to the motor.</li>
+					<li><b>Use a bandpass filter</b> to create a torque model.</li>
+					<li><b>Put it on the robot:</b> apply the method to the centipede robot and determine its mechanical work.</li>
+					<li><b>Order sensors:</b> decide how many electrical sensors the robot needs.</li>
+				</ul>
+				<div class="pager" style="margin-top: 48px;">
+					<a class="btn ghost" href="thesis.html">← Honors thesis</a>
+					<a class="btn" href="projects.html">More projects <span class="arrow" aria-hidden="true">→</span></a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container">
+			<div class="contact-grid">
+				<div>
+					<h2>Questions about this work?</h2>
+					<p>I'm happy to talk through the rig, the data, or the method.</p>
+					<div class="btn-row"><a class="btn" href="mailto:Siddharthpaleati23@gmail.com">Email me</a></div>
+				</div>
+				<ul class="contact-list">
+					<li><span>Email</span><a href="mailto:Siddharthpaleati23@gmail.com">Siddharthpaleati23@gmail.com</a></li>
+					<li><span>Phone</span><a href="tel:+12248643930">(224) 864-3930</a></li>
+					<li><span>Location</span>Hawthorn Woods, IL</li>
+					<li><span>Elsewhere</span><a href="https://www.linkedin.com/in/siddharth-paleati-7998622a8/">LinkedIn</a> · <a href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+				</ul>
+			</div>
+			<p class="footer-note">&copy; 2026 Siddharth Paleti</p>
+		</div>
+	</footer>
+
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+	<script defer src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"
+		onload="renderMathInElement(document.body, {delimiters: [{left: '\\[', right: '\\]', display: true}, {left: '\\(', right: '\\)', display: false}]});"></script>
+	<script src="assets/js/site.js"></script>
+</body>
+</html>

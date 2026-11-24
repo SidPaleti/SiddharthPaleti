@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Research | Siddharth Paleti</title>
+	<meta name="description" content="Research by Siddharth Paleti: an Honors thesis on handwriting style versus task, and robotics research on the energy cost of a centipede robot.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap">
+	<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+	<a class="skip" href="#main">Skip to content</a>
+
+	<header class="site-header">
+		<nav class="container nav" aria-label="Main">
+			<a class="brand" href="index.html">Siddharth Paleti</a>
+			<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+			</button>
+			<ul class="nav-links" id="nav-links">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="research.html" aria-current="page">Research</a></li>
+				<li><a href="projects.html">Projects</a></li>
+				<li><a href="activities.html">Extracurriculars</a></li>
+				<li><a href="contact.html">Contact</a></li>
+				<li><a class="btn" href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="main">
+		<section class="page-title">
+			<div class="container">
+				<span class="tag">Research</span>
+				<h1>Research</h1>
+				<p class="lede">The two projects I'm spending the most time on: my Honors thesis, and energy measurement for a centipede robot.</p>
+			</div>
+		</section>
+
+		<section class="section" style="padding-top: 8px;">
+			<div class="container">
+<article class="feature">
+					<div class="feature-body">
+						<div>
+							<span class="tag">Honors thesis</span>
+							<h3>Style vs. User: separating how you write from what you write</h3>
+							<p class="meta">Human-Centered Robotics Lab · Advised by Dr. Katie Fitzsimons</p>
+							<p>Two people writing the same letter produce different shapes. How much of that difference is a consistent personal style, and how much comes from the character itself? I represent each handwriting trajectory as a probabilistic movement primitive, find its main directions of variation with kernel PCA, test which of them track the writer and which track the task, then decode a writer's style back into a trajectory.</p>
+							<div class="btn-row">
+								<a class="btn" href="thesis.html">Read the full write-up <span class="arrow" aria-hidden="true">→</span></a>
+							</div>
+						</div>
+						<ol class="flow" aria-label="Thesis method">
+							<li><div><b>ProMP representation</b><br><span>Trajectories become fixed-length weight vectors</span></div></li>
+							<li><div><b>Kernel PCA</b><br><span>Principal scores of those weights</span></div></li>
+							<li><div><b>ANOVA</b><br><span>Which components track the user, which the task</span></div></li>
+							<li><div><b>Ridge regression</b><br><span>Decode a writer's style and redraw the trajectory</span></div></li>
+						</ol>
+					</div>
+					<div class="feature-media">
+						<ul class="legend" aria-label="Legend">
+							<li><i style="background:#9a9a9a"></i>User 1's recorded traces</li>
+							<li><i style="background:#1f77b4"></i>Mean trace</li>
+							<li><i style="background:#ff7f0e"></i>Mean + user's style</li>
+						</ul>
+						<div class="figs c3">
+							<figure><button class="zoom" type="button"><img src="images/research/thesis-S.png" width="780" height="780" loading="lazy" alt="Handwritten letter S traces from one user, with the generic mean trajectory in blue and the style-adjusted trajectory in orange"></button><figcaption>Letter S</figcaption></figure>
+							<figure><button class="zoom" type="button"><img src="images/research/thesis-O.png" width="780" height="780" loading="lazy" alt="Handwritten letter O traces from one user, with generic and style-adjusted trajectories"></button><figcaption>Letter O</figcaption></figure>
+							<figure><button class="zoom" type="button"><img src="images/research/thesis-3.png" width="780" height="780" loading="lazy" alt="Handwritten digit 3 traces from one user, with generic and style-adjusted trajectories"></button><figcaption>Digit 3</figcaption></figure>
+						</div>
+					</div>
+				</article>
+
+<article class="feature">
+					<div class="feature-body">
+						<div>
+							<span class="tag warm">Robotics research</span>
+							<h3>Centipede: what does it cost a robot to move?</h3>
+							<p class="meta">Locomotion in Biology and Robotics Lab · Advised by Dr. Baxi Chong</p>
+							<p>To compare gaits on the centipede robot, I need its cost of energy: the mechanical work its Dynamixel motors do, divided by weight and distance travelled. I'm building the measurement chain from scratch. A load-cell rig calibrates what a motor actually delivers, and an INA260 sensor reads the current it draws, so torque can be estimated from current alone.</p>
+							<div class="btn-row">
+								<a class="btn" href="centipede.html">Read the project log <span class="arrow" aria-hidden="true">→</span></a>
+							</div>
+						</div>
+						<div class="stats">
+							<div class="stat"><b>0.37 N·m</b><span>peak torque lifting 199.5 g on a 182 mm arm</span></div>
+							<div class="stat"><b>0.70 J</b><span>net work per lift, the same from 1 to 5 rpm</span></div>
+							<div class="stat"><b>110</b><span>cycles of torque peaks tracked in a single run</span></div>
+						</div>
+					</div>
+					<div class="feature-media">
+						<div class="figs wide-left">
+							<figure><button class="zoom" type="button"><img src="images/research/centi-current-fit.png" width="1200" height="919" loading="lazy" alt="Scatter plot of motor load reading against measured motor current from the INA260, with a straight-line fit for the up-stroke"></button><figcaption><b>Current tells you the load.</b> Motor load reading vs. current measured by the INA260.</figcaption></figure>
+							<figure class="photo"><button class="zoom" type="button"><img src="images/research/centi-motor-photo.jpg" width="913" height="1218" loading="lazy" alt="Dynamixel motor clamped to a desk with a lever arm attached, wired to a laptop" style="aspect-ratio: 4/3; object-position: 50% 35%;"></button><figcaption><b>The test rig.</b> Motor clamped to the bench, lever arm on the horn.</figcaption></figure>
+						</div>
+					</div>
+				</article>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container">
+			<div class="contact-grid">
+				<div>
+					<h2>Let's talk</h2>
+					<p>I'm happy to chat about research, robotics, or anything on this site.</p>
+					<div class="btn-row"><a class="btn" href="mailto:Siddharthpaleati23@gmail.com">Email me</a></div>
+				</div>
+				<ul class="contact-list">
+					<li><span>Email</span><a href="mailto:Siddharthpaleati23@gmail.com">Siddharthpaleati23@gmail.com</a></li>
+					<li><span>Phone</span><a href="tel:+12248643930">(224) 864-3930</a></li>
+					<li><span>Location</span>Hawthorn Woods, IL</li>
+					<li><span>Elsewhere</span><a href="https://www.linkedin.com/in/siddharth-paleti-7998622a8/">LinkedIn</a> · <a href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+				</ul>
+			</div>
+			<p class="footer-note">&copy; 2026 Siddharth Paleti</p>
+		</div>
+	</footer>
+
+	<script src="assets/js/site.js"></script>
+</body>
+</html>
