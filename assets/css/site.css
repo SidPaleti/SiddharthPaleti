@@ -449,7 +449,7 @@ a.contact-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); b
 .hero-grid { display: grid; gap: clamp(28px, 5vw, 72px); grid-template-columns: 1.4fr 1fr; align-items: center; }
 .hero-grid > * { min-width: 0; }
 @media (max-width: 860px) { .hero-grid { grid-template-columns: 1fr; } .hero-grid .headshot { order: -1; max-width: 280px; } }
-.hero-grid h1 { max-width: none; margin-bottom: 8px; font-size: clamp(2.6rem, 6vw, 4.4rem); }
+.hero-grid h1 { max-width: none; margin-bottom: 20px; font-size: clamp(2.6rem, 6vw, 4.4rem); }
 .hero .tagline { font: italic 500 clamp(1.5rem, 3vw, 2.1rem)/1.2 var(--font-display); color: var(--accent); margin: 0 0 22px; }
 .hero .lede { max-width: 56ch; }
 .headshot { margin: 0; position: relative; justify-self: center; width: 100%; max-width: 420px; }
@@ -466,3 +466,7 @@ a.contact-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); b
 .glance-item small { display: block; color: var(--muted); font-size: .92rem; margin-top: 2px; }
 .skills { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin-top: 14px; }
 .skills li { padding: 7px 14px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-size: .9rem; font-weight: 500; }
+
+/* Inline video clip */
+.clip { margin: 0; }
+.clip video { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; background: #000; border-radius: 16px; box-shadow: var(--shadow); }

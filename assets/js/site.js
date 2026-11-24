@@ -19,6 +19,11 @@
 		});
 	}
 
+	/* ---- Don't autoplay clips for people who prefer reduced motion ---- */
+	if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		document.querySelectorAll('video[autoplay]').forEach(function (v) { v.removeAttribute('autoplay'); v.pause(); });
+	}
+
 	/* ---- Image zoom (lightbox) ---- */
 	var zoomables = document.querySelectorAll('figure .zoom');
 	if (zoomables.length && typeof HTMLDialogElement === 'function') {
