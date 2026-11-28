@@ -35,7 +35,7 @@
 			<div class="container">
 				<span class="tag">Research</span>
 				<h1>Research</h1>
-				<p class="lede">The two projects I'm spending the most time on: my Honors thesis, and energy measurement for a centipede robot.</p>
+				<p class="lede">My Honors thesis, plus two projects in the Locomotion in Biology and Robotics Lab: energy measurement and terrain sensing for a centipede robot.</p>
 			</div>
 		</section>
 
@@ -99,6 +99,32 @@
 						</div>
 					</div>
 				</article>
+
+<article class="feature">
+					<div class="feature-body">
+						<div>
+							<span class="tag warm">Robotics research · Spring 2026</span>
+							<h3>Terrain roughness: can a centipede robot feel the ground?</h3>
+							<p class="meta">Locomotion in Biology and Robotics Lab · Advised by Dr. Baxi Chong</p>
+							<p>To move through rough terrain, the centipede robot needs to know how rough it is, and that can't be hard-coded. Using simulation data of a centipede (96 files, 53 parameters, 60 to 176 joints each), I reduced around 600,000 data points with PCA and tested eleven regression models. PLS regression explained 80% of the variation in terrain roughness.</p>
+							<div class="btn-row">
+								<a class="btn" href="terrain-roughness.html">Read the full write-up <span class="arrow" aria-hidden="true">→</span></a>
+							</div>
+						</div>
+						<ol class="flow" aria-label="Project method">
+							<li><div><b>Simulate the centipede</b><br><span>96 files across four terrain roughness levels</span></div></li>
+							<li><div><b>Reduce with PCA</b><br><span>22 parameter components, 37 link components, a 96 × 815 table</span></div></li>
+							<li><div><b>Eleven regression models</b><br><span>Compared by RMSE and R², predicted vs. actual roughness</span></div></li>
+							<li><div><b>PLS regression</b><br><span>RMSE 0.351, R² 0.800, following the trend from smooth to rough</span></div></li>
+						</ol>
+					</div>
+					<div class="feature-media">
+						<div class="figs wide-left">
+							<figure><button class="zoom" type="button"><img src="images/research/terrain-models.png" width="1500" height="920" loading="lazy" alt="Grid of eleven scatter plots comparing predicted and actual terrain roughness for each regression model"></button><figcaption><b>Eleven models.</b> Predicted vs. actual roughness.</figcaption></figure>
+							<figure><button class="zoom" type="button"><img src="images/research/terrain-pls.png" width="993" height="554" loading="lazy" alt="Line chart of actual and PLS-predicted terrain roughness, with the prediction following the steps from low to high roughness"></button><figcaption><b>PLS regression.</b> Predictions follow the trend from low to high roughness.</figcaption></figure>
+						</div>
+					</div>
+				</article>
 			</div>
 		</section>
 	</main>
@@ -109,10 +135,10 @@
 				<div>
 					<h2>Let's talk</h2>
 					<p>I'm happy to chat about research, robotics, or anything on this site.</p>
-					<div class="btn-row"><a class="btn" href="mailto:Siddharthpaleati23@gmail.com">Email me</a></div>
+					<div class="btn-row"><a class="btn" href="mailto:sid.paleti@gmail.com">Email me</a></div>
 				</div>
 				<ul class="contact-list">
-					<li><span>Email</span><a href="mailto:Siddharthpaleati23@gmail.com">Siddharthpaleati23@gmail.com</a></li>
+					<li><span>Email</span><a href="mailto:sid.paleti@gmail.com">sid.paleti@gmail.com</a></li>
 					<li><span>Phone</span><a href="tel:+12248643930">(224) 864-3930</a></li>
 					<li><span>Location</span>Hawthorn Woods, IL</li>
 					<li><span>Elsewhere</span><a href="https://www.linkedin.com/in/siddharth-paleti-7998622a8/">LinkedIn</a> · <a href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>

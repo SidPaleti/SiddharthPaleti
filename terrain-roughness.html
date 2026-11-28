@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Terrain Roughness from Simulated Centipede Data | Siddharth Paleti</title>
+	<meta name="description" content="Spring 2026 research in the Locomotion in Biology and Robotics Lab: using simulated centipede data, PCA and regression models to estimate terrain roughness.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap">
+	<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+	<a class="skip" href="#main">Skip to content</a>
+
+	<header class="site-header">
+		<nav class="container nav" aria-label="Main">
+			<a class="brand" href="index.html">Siddharth Paleti</a>
+			<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+			</button>
+			<ul class="nav-links" id="nav-links">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="research.html" aria-current="page">Research</a></li>
+				<li><a href="projects.html">Projects</a></li>
+				<li><a href="activities.html">Extracurriculars</a></li>
+				<li><a href="contact.html">Contact</a></li>
+				<li><a class="btn" href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="main">
+		<section class="page-hero">
+			<div class="container">
+				<a class="crumb" href="research.html">← All work</a><br>
+				<span class="tag warm">Robotics research · Spring 2026</span>
+				<h1>Can a centipede robot feel how rough the ground is?</h1>
+				<p class="lede">Can simulation data of a centipede be used to estimate terrain roughness? I reduced the simulation data with PCA and tested eleven regression models. PLS regression explained 80% of the variation in terrain roughness.</p>
+				<div class="meta-row">
+					<span><b>Researcher</b> Siddharth Paleti</span>
+					<span><b>Lab</b> Locomotion in Biology and Robotics (LIBR) Lab</span>
+					<span><b>Advisor</b> Dr. Baxi Chong</span>
+					<span><b>Project</b> Terrain roughness estimation · Spring 2026</span>
+					<span><b>Data</b> 96 centipede simulation runs</span>
+					<span><b>Software</b> MATLAB</span>
+				</div>
+				<nav class="toc" aria-label="On this page">
+					<a href="#intro">Introduction</a>
+					<a href="#reduce">Reducing the data</a>
+					<a href="#analyze">Analyzing the data</a>
+					<a href="#conclusion">Conclusion</a>
+				</nav>
+			</div>
+		</section>
+
+		<hr class="divider">
+
+		<section class="section" id="intro">
+			<div class="container">
+				<div class="prose" style="max-width: 76ch;">
+					<h2>Introduction</h2>
+					<p>The centipede robot can currently move and traverse flat terrain. The next step is being able to move through different terrain roughness. To traverse rough terrain, the robot needs to identify how rough the terrain is so it knows how to move through it.</p>
+					<p>We can't hard-code the robot to move through the terrain because the roughness is unknown, but the motors on the robot can receive signals such as torque, velocity, acceleration and other factors. By creating a simulation of a centipede in a 3D space, we can simulate data of the joints and parameters, such as link position, link velocity, joint torque, contact force and many others, to represent how the centipede reacts in different terrains.</p>
+					<p>In this project, the simulation data is used to determine whether the parameters and links of the centipede can be used to predict terrain roughness.</p>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="reduce">
+			<div class="container">
+				<div class="two-col">
+					<div class="prose">
+						<h2>Reducing the data</h2>
+						<p>Once the data was obtained from the simulation, the analysis required ninety-six files, fifty-three parameters for each file, and 60 to 176 joints for each parameter. Each file correlates to a simulation run on a certain terrain roughness. The simulation had four distinct types of terrain: Terrain 0.0, Terrain 0.7, Terrain 1.4 and Terrain 2.0.</p>
+						<p>The simulation gave around 600,000 data points. That is too much to analyze, because not only is the size of the problem large, the variation within the data is similar and much of it may be redundant.</p>
+						<p>Once I extracted the data from the simulation files, I ran Principal Component Analysis (PCA), a dimensionality reduction technique, to find the dominant components of variation. PCA works best for a 2-dimensional matrix, and this matrix was 4-dimensional. I converted the features, parameters and links to be associated with the columns, and the rows correlated to the files, the terrain roughness.</p>
+						<p>The PCA reduced the parameters to twenty-two principal components and the links to thirty-seven principal components, creating a <b>96 × 815</b> table.</p>
+					</div>
+					<ul class="pills" aria-label="Dataset" style="align-content:flex-start;">
+						<li>96 simulation files</li>
+						<li>4 terrain types: 0.0, 0.7, 1.4, 2.0</li>
+						<li>53 parameters per file</li>
+						<li>60 to 176 joints per parameter</li>
+						<li>~600,000 data points</li>
+						<li>PCA: 22 parameter PCs, 37 link PCs</li>
+						<li>96 × 815 table</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+
+		<section class="section" id="analyze">
+			<div class="container">
+				<div class="prose" style="max-width: 76ch;">
+					<h2>Analyzing the data</h2>
+					<p>After reducing the simulation data with PCA, the new table is analyzed using regression models to predict terrain roughness. The models tested were ridge regression, lasso, elastic net, PCA with linear regression, PLS regression, linear SVR, Gaussian SVR, Gaussian kernel ridge, Gaussian process regression, random forest and gradient boosting. The reason for testing so many models was to determine which type of regression model best represented the relationship between the PCA table and the terrain roughness.</p>
+					<p>In Figure 1, the plots represent the regression models and compare the predicted roughness values (the blue points) against the actual roughness values. The red dashed line is the perfect scenario, where predicted roughness equals actual roughness. The closer the predicted values are to the red dashed line, the more promise that model shows for predicting the terrain.</p>
+				</div>
+				<figure style="margin-top: 24px;">
+					<button class="zoom" type="button"><img src="images/research/terrain-models.png" width="1500" height="920" loading="lazy" alt="Grid of eleven scatter plots, one per regression model, each comparing predicted terrain roughness to actual roughness with a red dashed perfect-prediction line and the model's RMSE and R squared in the title"></button>
+					<figcaption><b>Figure 1.</b> Predicted vs. actual roughness for the different regression models.</figcaption>
+				</figure>
+
+				<div class="two-col" style="margin-top: 32px; align-items:start;">
+					<div>
+						<div class="table-wrap">
+							<table>
+								<thead><tr><th>Model</th><th>RMSE</th><th>R<sup>2</sup></th></tr></thead>
+								<tbody>
+									<tr class="loaded"><td>Ridge regression</td><td>0.350</td><td>0.801</td></tr>
+									<tr class="loaded"><td>PLS regression (11 comp)</td><td>0.351</td><td>0.800</td></tr>
+									<tr class="loaded"><td>Gaussian kernel ridge</td><td>0.362</td><td>0.787</td></tr>
+									<tr class="loaded"><td>Linear SVR</td><td>0.371</td><td>0.777</td></tr>
+									<tr><td>Random forest</td><td>0.406</td><td>0.733</td></tr>
+									<tr><td>Gradient boosting</td><td>0.435</td><td>0.693</td></tr>
+									<tr><td>PCA + linear regression (30 PC)</td><td>0.459</td><td>0.657</td></tr>
+									<tr><td>Elastic net</td><td>0.468</td><td>0.645</td></tr>
+									<tr><td>Lasso</td><td>0.562</td><td>0.487</td></tr>
+									<tr><td>Gaussian SVR</td><td>0.781</td><td>0.008</td></tr>
+									<tr><td>Gaussian process regression</td><td>0.786</td><td>−0.003</td></tr>
+								</tbody>
+							</table>
+						</div>
+						<p class="table-note">The values shown in Figure 1, sorted by RMSE.</p>
+					</div>
+					<div class="prose">
+						<p>The graphs use root mean square error (RMSE) to measure the error between the predicted and actual roughness, so ideally this value is as small as possible. They also use R<sup>2</sup>, which ranges from 0 to 1 and indicates how well the data fits the regression model, with a value close to one suggesting better predictive accuracy.</p>
+						<p>From these values, ridge regression, PLS regression, linear SVR and Gaussian kernel ridge performed the best overall, since their predictions stayed closest to the red dashed line. Ridge regression had an RMSE of 0.350 and an R<sup>2</sup> of 0.801. PLS regression had an RMSE of 0.351 and an R<sup>2</sup> of 0.800. Linear SVR had an RMSE of 0.371 and an R<sup>2</sup> of 0.777, and Gaussian kernel ridge performed similarly with an RMSE of 0.362 and an R<sup>2</sup> of 0.787.</p>
+					</div>
+				</div>
+
+				<div class="two-col" style="margin-top: 40px; align-items:center;">
+					<figure>
+						<button class="zoom" type="button"><img src="images/research/terrain-pls.png" width="993" height="554" loading="lazy" alt="Line chart of the test samples sorted by actual roughness, actual values as blue circles in steps at 0, 0.7 and 2, predicted values as orange squares following the same steps with some error"></button>
+						<figcaption><b>Figure 2.</b> Predicted roughness values using the PLS regression model compared to the actual roughness values.</figcaption>
+					</figure>
+					<div class="prose">
+						<p>Figure 2 shows the PLS regression model with the actual roughness values and the predicted roughness values plotted on the same axis. The graph shows how the predicted values follow the general trend from low roughness to high roughness.</p>
+						<p>The lower and middle roughness regions match the actual values well, with some errors. The predicted values for roughness 2.0 are slightly below the correct value. The model is still able to capture the increase, but it is reducing some of the higher roughness values.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="conclusion">
+			<div class="container">
+				<div class="prose" style="max-width: 76ch;">
+					<h2>Conclusion</h2>
+					<p>The goal of this project was to determine whether simulation data of a centipede could be used to estimate terrain roughness. The results showed that a PLS regression model was able to explain 80% of the variation in the terrain roughness, and the predicted vs. actual graph also showed that the model was able to follow the trend of the actual terrain roughness.</p>
+					<p>The model is not perfect, and its predictions are rarely the same as the actual data. Future work will use more simulations of a terrain that represents the one that will be used in the Locomotion Robotics Lab.</p>
+				</div>
+				<div class="pager" style="margin-top: 48px;">
+					<a class="btn ghost" href="centipede.html">← Centipede energy research</a>
+					<a class="btn" href="projects.html">More projects <span class="arrow" aria-hidden="true">→</span></a>
+				</div>
+			</div>
+		</section>
+</main>
+
+	<footer class="site-footer">
+		<div class="container">
+			<div class="contact-grid">
+				<div>
+					<h2>Questions about this work?</h2>
+					<p>I'm happy to talk through the simulation data, the PCA, or the models.</p>
+					<div class="btn-row"><a class="btn" href="mailto:sid.paleti@gmail.com">Email me</a></div>
+				</div>
+				<ul class="contact-list">
+					<li><span>Email</span><a href="mailto:sid.paleti@gmail.com">sid.paleti@gmail.com</a></li>
+					<li><span>Phone</span><a href="tel:+12248643930">(224) 864-3930</a></li>
+					<li><span>Location</span>Hawthorn Woods, IL</li>
+					<li><span>Elsewhere</span><a href="https://www.linkedin.com/in/siddharth-paleti-7998622a8/">LinkedIn</a> · <a href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+				</ul>
+			</div>
+			<p class="footer-note">&copy; 2026 Siddharth Paleti</p>
+		</div>
+	</footer>
+
+	<script src="assets/js/site.js"></script>
+</body>
+</html>
