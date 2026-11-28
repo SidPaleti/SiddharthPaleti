@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Simulated Warehouse Robot | Siddharth Paleti</title>
+	<meta name="description" content="ME 456 project: a simulated differential-drive warehouse robot driven by a time-based controller and a sensor-based controller that estimates its own pose from wheel encoders, tested with and without noise.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;1,6..72,500&display=swap">
+	<link rel="stylesheet" href="assets/css/site.css">
+</head>
+<body>
+	<a class="skip" href="#main">Skip to content</a>
+
+	<header class="site-header">
+		<nav class="container nav" aria-label="Main">
+			<a class="brand" href="index.html">Siddharth Paleti</a>
+			<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+			</button>
+			<ul class="nav-links" id="nav-links">
+				<li><a href="index.html">Home</a></li>
+				<li><a href="research.html">Research</a></li>
+				<li><a href="projects.html" aria-current="page">Projects</a></li>
+				<li><a href="activities.html">Extracurriculars</a></li>
+				<li><a href="contact.html">Contact</a></li>
+				<li><a class="btn" href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<main id="main">
+		<section class="page-hero">
+			<div class="container">
+				<a class="crumb" href="projects.html">← All projects</a><br>
+				<span class="tag warm">Simulation · Robotics controls</span>
+				<h1>Simulated Warehouse Robot</h1>
+				<p class="lede">Can a robot find its way using only its wheels? I built a time-based controller and a sensor-based controller for a simulated differential-drive robot, then tested both with and without noise.</p>
+				<div class="meta-row">
+					<span><b>Course</b> ME 456</span>
+					<span><b>Task</b> Packing station p2 to item location i1</span>
+					<span><b>Software</b> MATLAB, Simulink, Stateflow</span>
+					<span><b>Toolboxes</b> Robotics Playground, Simscape Multibody</span>
+				</div>
+				<nav class="toc" aria-label="On this page">
+					<a href="#setup">The task</a>
+					<a href="#time">Time-based controller</a>
+					<a href="#pose">Pose estimation</a>
+					<a href="#sensor">Sensor-based controller</a>
+					<a href="#noise">Adding noise</a>
+					<a href="#compare">Comparison</a>
+				</nav>
+			</div>
+		</section>
+
+		<hr class="divider">
+
+		<section class="section" id="setup">
+			<div class="container">
+				<div class="two-col">
+					<div class="prose">
+						<h2>The task</h2>
+						<p>The project is a simulation of a differential-drive robot moving between a warehouse packing station and the shelves where items are picked up. The robot has wheels of radius 0.08 m, a wheel spacing of 0.4 m, and two encoders that each count ticks of 1°. The motors take a control signal, and signals of about 30 to 70 work well.</p>
+						<p>I developed two controllers and compared them. The <b>time-based controller</b> only sends commands to the motors based on how much time has passed, and does not use the encoders. The <b>sensor-based controller</b> estimates the wheel velocities from the encoders, estimates the pose of the robot from the vehicle kinematic model, and uses that pose to choose the control signals. The environment provides the actual pose, but it is only used for plotting and evaluation, never inside the controller.</p>
+						<p>Both controllers were first developed with the actuators and sensors perfect, then tested with noise on the motors and the encoders. Every run goes from packing station p2 to item location i1.</p>
+					</div>
+					<ul class="pills" aria-label="Setup" style="align-content:flex-start;">
+						<li>Wheel radius 0.08 m</li>
+						<li>Wheel spacing 0.4 m</li>
+						<li>Encoder tick = 1°</li>
+						<li>Motor signal 30 to 70</li>
+						<li>Route: p2 to i1</li>
+						<li>Two controllers, noise on and off</li>
+					</ul>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="time">
+			<div class="container">
+				<div class="two-col" style="align-items:start;">
+					<div class="prose">
+						<h2>Time-based controller</h2>
+						<p>The robot starts at (−2.75, 1.0) m, touching the right edge of p2, and needs to reach i1 at (−0.75, 1.0) m. Both are at y = 1 m, but a straight drive east would run into the first shelf. The route leaves p2 into the vertical aisle, drops to the middle of the main horizontal aisle, drives east to x ≈ −0.75 m and turns north into i1. That makes four straight segments and three 90° turns.</p>
+						<p>The controller is a Stateflow chart with eight states. Each state sets the left and right motor signals when it is entered, and an <code>after(t, sec)</code> transition passes control to the next state once the segment time has elapsed. Every drive and turn uses a signal of 70: both wheels at +70 drive straight, and +70 on one wheel with −70 on the other turns the robot in place.</p>
+						<p>The segment times came from calibration runs with noise off. At a signal of 70 the robot moves at about 0.17 m/s and turns at about 29°/s, so a 90° turn takes roughly 3.1 s. Those first values were refined with a script that simulated the route, read the position and heading at the end of each segment, adjusted that segment's time and repeated.</p>
+						<p>With noise off, the robot ends at (−0.711, 0.998) m with a heading of 92.1°. Its center is inside the i1 box and 0.04 m from the center of the box. It enters the box about 29.4 s into the run and stays there.</p>
+					</div>
+					<div>
+						<div class="table-wrap">
+							<table>
+								<thead><tr><th>State</th><th>Left</th><th>Right</th><th>Time (s)</th></tr></thead>
+								<tbody>
+									<tr><td>Drive_out</td><td>70</td><td>70</td><td>1.294</td></tr>
+									<tr><td>Turn_right</td><td>70</td><td>−70</td><td>3.107</td></tr>
+									<tr><td>Drive_down</td><td>70</td><td>70</td><td>5.562</td></tr>
+									<tr><td>Turn_left_1</td><td>−70</td><td>70</td><td>3.138</td></tr>
+									<tr><td>Drive_east</td><td>70</td><td>70</td><td>10.072</td></tr>
+									<tr><td>Turn_left_2</td><td>−70</td><td>70</td><td>3.121</td></tr>
+									<tr><td>Drive_to_item</td><td>70</td><td>70</td><td>5.688</td></tr>
+									<tr><td>Stop</td><td>0</td><td>0</td><td>rest of run</td></tr>
+								</tbody>
+							</table>
+						</div>
+						<p class="table-note">States of the time-based controller, p2 to i1.</p>
+					</div>
+				</div>
+
+				<div class="two-col" style="margin-top: 40px; align-items:start;">
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-time-path.png" width="1300" height="1333" loading="lazy" alt="Top-down map of the warehouse with packing stations, shelves and item locations, and the blue path of the time-based robot going from p2 down to the main aisle, east, and north into i1"></button>
+						<figcaption><b>Path in the warehouse.</b> The time-based controller drives from p2, through the aisles, into i1.</figcaption>
+					</figure>
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-time-position.png" width="1267" height="852" loading="lazy" alt="Line chart of the robot's x and y position over 35 seconds for the time-based controller"></button>
+						<figcaption><b>Position over time.</b> x and y of the robot during the run.</figcaption>
+					</figure>
+				</div>
+
+				<div class="two-col" style="margin-top: 32px; align-items:start;">
+					<figure class="clip" style="margin:0;">
+						<video controls muted loop playsinline preload="metadata" poster="videos/warehouse-time-based-poster.jpg" width="1346" height="760" aria-label="Simulation video of the time-based controller driving the robot from p2 to i1" style="aspect-ratio: 1346 / 760;">
+							<source src="videos/warehouse-time-based.mp4" type="video/mp4">
+							Your browser can't play this video.
+						</video>
+						<figcaption><b>Time-based run.</b> The simulation video of the robot going from p2 to i1.</figcaption>
+					</figure>
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-time-chart.png" width="1224" height="327" loading="lazy" alt="Stateflow chart of the time-based controller with eight states in two rows"></button>
+						<figcaption><b>The Stateflow chart.</b> Eight states, each moving on after a set time.</figcaption>
+					</figure>
+				</div>
+			</div>
+		</section>
+
+		<section class="section" id="pose">
+			<div class="container">
+				<div class="two-col" style="align-items:start;">
+					<div class="prose">
+						<h2>Pose estimation</h2>
+						<p>The estimator uses the two encoders and the differential-drive kinematic model. Each encoder signal goes through a Discrete Derivative block (0.1 s sample time) and a gain of 2π/360, which gives the wheel angular velocities ω<sub>L</sub> and ω<sub>R</sub> in rad/s. The forward speed and turn rate are then</p>
+						<p style="text-align:center;"><i>v</i> = <i>r</i>(ω<sub>R</sub> + ω<sub>L</sub>)/2, &nbsp; ω = <i>r</i>(ω<sub>R</sub> − ω<sub>L</sub>)/<i>L</i></p>
+						<p>and the pose follows from integrating them: θ = ∫ω dt, x = ∫v cos θ dt and y = ∫v sin θ dt.</p>
+						<p>The first version used continuous-time integrators, and each derivative sample was applied one step late. The largest heading error on the test motion was 2.48°. The final version uses discrete-time integrators with backward Euler at the 0.1 s sample time, and x and y use the heading at the middle of each step. On the same motion the largest heading error fell to 1.40°.</p>
+					</div>
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-estimator-diagram.png" width="1299" height="391" loading="lazy" alt="Simulink block diagram inside the Pose Estimator subsystem"></button>
+						<figcaption><b>Inside the Pose Estimator.</b> Derivatives, kinematic model, and integrators in Simulink.</figcaption>
+					</figure>
+				</div>
+
+				<div class="prose" style="max-width: 76ch; margin-top: 40px;">
+					<h3>Testing it</h3>
+					<p>The test runs in the simple environment, a 10 m square, with the robot starting at (0, 0) at 0°. To get motion in x, y and rotation at the same time, a Stateflow chart like the one in the time-based controller drives it through straight drives, an arc to the left, an in-place left turn, an arc to the right and a final straight drive. Over the 46 s run the path is 6.57 m long.</p>
+					<p>The largest errors are 0.044 m in x, 0.027 m in y and 1.40° in heading, and the root-mean-square errors are 0.019 m, 0.015 m and 0.79°. At the end of the run the position error is 0.050 m over a path of 6.57 m, under 1% of the distance traveled. The x error is largest at the end, which is what dead reckoning is expected to do, since each small reading error stays in the integral.</p>
+				</div>
+				<div class="two-col" style="margin-top: 24px; align-items:start;">
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-estimator-position.png" width="1300" height="839" loading="lazy" alt="Line chart of actual and estimated x and y position over 46 seconds, with the estimate closely following the actual values"></button>
+						<figcaption><b>Actual vs. estimated position</b> over time in the simple environment.</figcaption>
+					</figure>
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-estimator-path.png" width="1134" height="1169" loading="lazy" alt="Path in the xy plane with the actual path in blue and the estimated path as a red dashed line, almost on top of each other"></button>
+						<figcaption><b>Actual vs. estimated path</b> in the xy plane.</figcaption>
+					</figure>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="sensor">
+			<div class="container">
+				<div class="two-col" style="align-items:start;">
+					<div class="prose">
+						<h2>Sensor-based controller</h2>
+						<p>The sensor-based controller takes the same trip as the time-based one and uses only the encoders. The estimator turns the encoder counts into an estimated pose, and a Stateflow chart uses that estimate to drive the robot through four waypoints: (−2.5, 1.0), (−2.5, 0), (−0.7, 0) and (−0.7, 1.0) m.</p>
+						<p>It was developed in four steps, each tested before the next was added. The estimator came first, because the controller can only be as good as the pose it reads. Next the route was reduced to four waypoints in the aisles. A Stateflow chart was then written to visit them in order, and finally the gains were adjusted by running the model with noise off.</p>
+						<p>The chart has four states. In <b>Turn</b>, the robot rotates in place toward waypoint <i>k</i> with a signal proportional to the heading error, limited to between 25 and 60, and moves on when the error is below 0.03 rad. In <b>Drive</b>, the forward signal is proportional to the distance remaining along the leg, limited to between 30 and 70, with a steering term added to one wheel and subtracted from the other to stay on the line to the waypoint. After the last waypoint it enters <b>Done</b>, which sets both signals to zero, and two seconds later <b>Finish</b> ends the simulation.</p>
+						<p>Two details are worth explaining. The stop test uses the distance remaining along the leg, projected on the heading of the leg, not the straight-line distance. It reaches zero even if the robot has drifted sideways, and goes negative if it overshoots, so a leg always ends. The steering term is also switched off within 0.1 m of a waypoint, because the bearing to a point that close changes quickly with small errors in the estimated position, and the robot would swerve.</p>
+					</div>
+					<div>
+						<div class="table-wrap">
+							<table>
+								<thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+								<tbody>
+									<tr><td>K<sub>v</sub>, forward gain</td><td>150</td></tr>
+									<tr><td>Forward signal limits</td><td>30 to 70</td></tr>
+									<tr><td>K<sub>w</sub>, turn gain</td><td>100</td></tr>
+									<tr><td>Turn signal limits</td><td>25 to 60</td></tr>
+									<tr><td>K<sub>h</sub>, steering gain</td><td>60</td></tr>
+									<tr><td>Steering limit</td><td>±15</td></tr>
+									<tr><td>Heading tolerance</td><td>0.03 rad</td></tr>
+									<tr><td>Distance tolerance</td><td>0.03 m</td></tr>
+								</tbody>
+							</table>
+						</div>
+						<p class="table-note">Controller gains and thresholds, found by trial in simulation.</p>
+					</div>
+				</div>
+
+				<div class="two-col" style="margin-top: 40px; align-items:start;">
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-sensor-chart.png" width="1300" height="1056" loading="lazy" alt="Stateflow chart of the sensor-based controller with Turn, Drive, Done and Finish states"></button>
+						<figcaption><b>The sensor-based chart.</b> Turn toward a waypoint, drive to it, repeat, then stop.</figcaption>
+					</figure>
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-sensor-top.png" width="1299" height="715" loading="lazy" alt="Top-level Simulink model with the sensor-based controller, motors, encoders and pose estimator connected in a loop"></button>
+						<figcaption><b>Top-level model.</b> Encoders feed the Pose Estimator, which feeds the controller, which drives the motors.</figcaption>
+					</figure>
+				</div>
+
+				<div class="prose" style="max-width: 76ch; margin-top: 40px;">
+					<h3>Results</h3>
+					<p>With noise off, the run ends at 46.4 s, which includes the 2 s hold in the Done state. The robot ends at (−0.687, 0.973) m, inside i1 and 0.07 m from the center of the box. It enters the box at 39.9 s and stays. The estimate it steers by stayed within 0.015 m and 0.9° of the actual pose, so its decisions rested on good information.</p>
+					<p>It is slower than the time-based controller, whose robot is in the box after 29.4 s against 39.9 s here. The forward signal drops as the robot nears each waypoint, which probably accounts for most of the difference.</p>
+				</div>
+				<div class="two-col" style="margin-top: 24px; align-items:start;">
+					<figure>
+						<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-sensor-path.png" width="1300" height="1333" loading="lazy" alt="Top-down map of the warehouse showing the sensor-based robot's path through four waypoints from p2 into i1"></button>
+						<figcaption><b>Path through the waypoints.</b> The route passes the four waypoints in the aisles and ends in i1.</figcaption>
+					</figure>
+					<figure class="clip" style="margin:0;">
+						<video controls muted loop playsinline preload="metadata" poster="videos/warehouse-sensor-based-poster.jpg" width="1346" height="760" aria-label="Simulation video of the sensor-based controller driving the robot from p2 to i1" style="aspect-ratio: 1346 / 760;">
+							<source src="videos/warehouse-sensor-based.mp4" type="video/mp4">
+							Your browser can't play this video.
+						</video>
+						<figcaption><b>Sensor-based run.</b> The simulation video of the robot going from p2 to i1.</figcaption>
+					</figure>
+				</div>
+			</div>
+		</section>
+
+		<section class="section" id="noise">
+			<div class="container">
+				<div class="two-col" style="align-items:start;">
+					<div class="prose">
+						<h2>Adding noise</h2>
+						<p>Each controller was run five times with noise on. Before every trial the provided script set the motor noise to 100 and the encoder noise to 50 and drew new random seeds. The actual final position was saved after each trial, and the no-noise runs were added for comparison.</p>
+						<p>Noise moves the final position of both controllers away from the no-noise result, and the two are affected in different ways. The five time-based finals lie 0.35 to 0.52 m from the no-noise final (mean 0.43 m), and the five sensor-based finals lie 0.01 to 0.51 m away (mean 0.28 m). Three of five trials end with the center of the robot inside i1 for each controller.</p>
+						<p>The time-based controller has no feedback, so a wheel that runs a little faster or slower than commanded turns directly into a heading and position error that carries into every later segment. Motor noise alone gives the same spread as full noise, and encoder noise alone changes nothing, since that controller never reads the encoders.</p>
+						<p>With both noise sources on, the sensor-based controller stopped on average 0.05 m from its last waypoint according to its own estimate, while the actual robot was 0.36 m from the estimated position, in the same direction in all five trials. The feedback worked on the information it had, and that information was wrong. I suspect wheel slip under the noisy motors, but I did not test that.</p>
+					</div>
+					<div>
+						<figure>
+							<button class="zoom" type="button"><img src="images/projects/simulated-warehouse-robot/robot-noise-finals.png" width="1300" height="1155" loading="lazy" alt="Final robot positions near the i1 box for five noisy trials and one no-noise run of each controller; time-based finals are scattered around the box, sensor-based finals sit together to the right of and below its middle"></button>
+							<figcaption><b>Final positions.</b> Five noisy trials and one no-noise run of each controller. The shaded box is i1.</figcaption>
+						</figure>
+					</div>
+				</div>
+
+				<div style="margin-top: 32px; max-width: 760px;">
+					<div class="table-wrap">
+						<table>
+							<thead><tr><th>Five noisy trials</th><th>Time-based</th><th>Sensor-based</th></tr></thead>
+							<tbody>
+								<tr><td>Mean final position (m)</td><td>(−0.524, 1.032)</td><td>(−0.539, 0.756)</td></tr>
+								<tr><td>Std. dev. of x, y (m)</td><td>0.231, 0.368</td><td>0.087, 0.210</td></tr>
+								<tr><td>Mean distance from no-noise final (m)</td><td>0.428</td><td>0.278</td></tr>
+								<tr><td>Largest distance from no-noise final (m)</td><td>0.519</td><td>0.505</td></tr>
+								<tr><td>Final heading range (°)</td><td>65.3 to 111.0</td><td>57.7 to 104.5</td></tr>
+								<tr><td>Trials with center inside i1</td><td>3 of 5</td><td>3 of 5</td></tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section alt" id="compare">
+			<div class="container">
+				<div class="prose" style="max-width: 76ch;">
+					<h2>Comparing the two controllers</h2>
+					<p>Without noise, both controllers do the job. The time-based controller is faster (in the box after 29.4 s against 39.9 s) and ends 0.04 m from the center of i1 against 0.07 m. Its timing had to be tuned segment by segment, and it only works for this route, this start and these motors. The sensor-based controller needs only a list of waypoints, and its pose estimate stayed within 0.015 m of the true position.</p>
+					<p>With noise, the sensor-based finals are less scattered. Over ten noisy runs of each controller, the standard deviation of the final position is 0.09 m in x and 0.15 m in y for the sensor-based controller against 0.21 m and 0.34 m for the time-based one. It does not reach the box more often, though: the center of the robot ends inside i1 in 3 of 10 sensor-based runs and 5 of 10 time-based runs, because the sensor-based finals sit together just to the right of and below the middle of the box, while the time-based finals are spread widely around it.</p>
+					<p>I would still recommend the sensor-based controller for a real robot. Its error is a consistent offset caused by a wrong pose estimate, which could be reduced by filtering the encoder signals, by modeling the wheels better or by adding a second sensor that corrects the estimate. The time-based controller's error is random and has no feedback to act on, and it would change with the battery, the floor or the load. This recommendation rests on ten runs per controller and a noise model that I could not compare with a real robot, and neither controller would be reliable enough as built.</p>
+				</div>
+				<div class="pager" style="margin-top: 48px;">
+					<a class="btn ghost" href="projects.html">← All projects</a>
+					<a class="btn" href="research.html">Research <span class="arrow" aria-hidden="true">→</span></a>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer class="site-footer">
+		<div class="container">
+			<div class="contact-grid">
+				<div>
+					<h2>Questions about this project?</h2>
+					<p>I'm happy to talk through the controllers, the pose estimator, or the noise tests.</p>
+					<div class="btn-row"><a class="btn" href="mailto:sid.paleti@gmail.com">Email me</a></div>
+				</div>
+				<ul class="contact-list">
+					<li><span>Email</span><a href="mailto:sid.paleti@gmail.com">sid.paleti@gmail.com</a></li>
+					<li><span>Phone</span><a href="tel:+12248643930">(224) 864-3930</a></li>
+					<li><span>Location</span>Hawthorn Woods, IL</li>
+					<li><span>Elsewhere</span><a href="https://www.linkedin.com/in/siddharth-paleti-7998622a8/">LinkedIn</a> · <a href="https://amaranth-genna-52.tiiny.site/">Resume</a></li>
+				</ul>
+			</div>
+			<p class="footer-note">&copy; 2026 Siddharth Paleti</p>
+		</div>
+	</footer>
+
+	<script src="assets/js/site.js"></script>
+</body>
+</html>
